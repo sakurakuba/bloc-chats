@@ -17,15 +17,28 @@ class RoomList extends Component {
           });
         }
 
+        createRoom() {
+
+        
+        }
+
 
     render() {
 
         return (
             <section className="RoomList">
-            {
-            this.state.rooms.map( room => 
+            <div className="form-list">
+                <form className="form-chat">
+                    <fieldset>
+                        <legend>New Chat</legend>
+                        <input type='text' placeholder='Chat Name..' />
+                        <button type='submit' className="pure-button pure-button-primary">Create</button>
+                    </fieldset>
+                </form>
+            {this.state.rooms.map( room => 
             <div> {room.name} </div>
             )};
+            </div>
             </section>
         );
   }
