@@ -4,9 +4,16 @@ class RoomList extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            rooms: []
+            rooms: [],
+            newRoomName: ''
           };
         this.roomsRef = this.props.firebase.database().ref('rooms');
+        this.handleSubmit = this.handleSubmit.bind(this);
+
+    }
+
+    handleChange(e) {
+        this.setState({ newRoomName: e.target.value })
     }
 
     componentDidMount() {
@@ -15,31 +22,38 @@ class RoomList extends Component {
             room.key = snapshot.key;
             this.setState({ rooms: this.state.rooms.concat( room ) });
           });
-        }
+    }
 
-        createRoom() {
+    createRoom(newRoomName) {
+        this.roomsRef.push({ name: newRoomName });
+    }
 
-        
-        }
+    handleSubmit(e) {
+        e.preventDefault();
+        this.createRoom(this.state.newRoomName);
+        this.setState({ newRoomName: ''});
+      }
 
 
     render() {
 
         return (
-            <section className="RoomList">
-            <div className="form-list">
-                <form className="form-chat">
+            <div>
+                <ul>
+                    {
+                        this.state.rooms.map( (room) => <li key={room.key}>{room.name}</li> )
+                    }
+                </ul>
+                
+                <form onSubmit={ (e) => this.handleSubmit(e) } >
                     <fieldset>
                         <legend>New Chat</legend>
-                        <input type='text' placeholder='Chat Name..' />
+                        <input type='text' value={ this.state.newRoomName } onChange={ this.handleChange.bind(this) } placeholder='Chat Name..' />
                         <button type='submit' className="pure-button pure-button-primary">Create</button>
                     </fieldset>
                 </form>
-            {this.state.rooms.map( room => 
-            <div> {room.name} </div>
-            )};
+
             </div>
-            </section>
         );
   }
 }
