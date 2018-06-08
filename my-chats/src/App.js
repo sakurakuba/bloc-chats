@@ -24,28 +24,28 @@ class App extends Component {
     super();
     this.state = {
       activeRoom: null,
-      user: null
+      activeUser: '',
     };
     this.changeRoom = this.changeRoom.bind(this);
-    this.setUser = this.setUser.bind(this);
+    this.currentUser = this.currentUser.bind(this);
   }
 
   changeRoom(room){
-    this.setState({ activeRoom: room});
+    this.setState({activeRoom: room});
   }
 
-  setUser(user) {
-    this.setState({ user: user });
+  currentUser(user) {
+    this.setState({activeUser: user});
   }
 
   render() {
     return (
       <div className="App">
-        <User firebase={firebase} setUser={this.setUser} />
-        <RoomList firebase={firebase} changeRoomEvent={this.changeRoom} user={this.state.user} />
+        <User firebase={firebase} currentUser={this.currentUser}  user={this.state.activeUser} />
+        <RoomList firebase={firebase} changeRoomEvent={this.changeRoom} />
         <h3>{this.state.activeRoom && 'Room: ' + this.state.activeRoom.name}</h3>
         <div>
-          <MessageList firebase={firebase} room={this.state.activeRoom} user={this.state.user} />
+          <MessageList firebase={firebase} room={this.state.activeRoom} />
         </div>
       </div>
     );

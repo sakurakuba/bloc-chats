@@ -3,61 +3,38 @@ import React, { Component } from 'react';
 class User extends Component { 
     constructor(props) {
         super(props);
+        this.state = {
+            user: null
+        };
         this.signIn = this.signIn.bind(this);
         this.signOut = this.signOut.bind(this);
-        this.setUser = this.props.setUser;
     }
 
     componentDidMount() {
         this.props.firebase.auth().onAuthStateChanged( (user) => {
-        this.props.setUser(user);
-        const isOnline = this.props.firebase.database().ref(".info/connected");
-        if (user) {
-          const userRef = this.props.firebase.database().ref("presence/" + user.uid);
-          isOnline.on("value", snapshot => {
-            if (snapshot.val()) {
-              userRef.update({username: user.displayName, isOnline: true});
-              userRef.onDisconnect().update({isOnline: false, activeRoom: ''});
-            }
-          });
-        }
-
+        this.props.currentUser(user);
       });
     }
 
-    signIn(e) {
-        e.preventDefault();
+    signIn() {
         const provider = new this.props.firebase.auth.GoogleAuthProvider();
         this.props.firebase.auth().signInWithPopup( provider );
     }
 
-    signOut(e) {
-        e.preventDefault();
-        this.props.firebase.auth().onAuthStateChanged(user => {
-            if (user !== null) {
-              const userRef = this.props.firebase.database().ref("presence/" + user.uid);
-              userRef.update({isOnline: false, activeRoom: '' });
-            }
-          });
-
-        this.props.firebase.auth().signOut().then( () => {
-            this.setUser(null);
-        });
+    signOut() {
+        this.props.firebase.auth().signOut();
     }
     
     render() {
+        const displayUser = this.props.user === null ? "Guest" : this.props.user.displayName
         return (
             <div className="login-section">
-                <ul>
-                        <legend>Welcome {} </legend>
-                        <input type='text' placeholder='Username..' />
-                        <button type='submit' className="pure-button pure-button-primary"
-                        onClick={ this.signIn }>Sign in</button>
-                        <button 
-                        type='submit' 
-                        className="pure-button pure-button-primary"
-                        onClick={ this.signOut } >Sign Out</button>
-                </ul>
+                <div>
+                        <legend>Welcome { displayUser } </legend>
+                        <input type="text" />
+                        <button onClick={ this.signIn }>Sign in</button>
+                        <button onClick={ this.signOut }>Sign Out</button>
+                </div>
             </div>
         );
   }
