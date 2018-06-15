@@ -5,9 +5,9 @@ class MessageList extends Component {
         super(props);
         this.state = {
             messages: [],
-            messagesRef: null
+            newMessage: '',
           };
-        this.sessionsRef = this.props.firebase.database().ref("sessions");
+        this.newMessages = this.newMessages.bind(this)
     }
 
     componentWillReceiveProps(nextProps){
@@ -32,6 +32,20 @@ class MessageList extends Component {
         });
     }
 
+    newMessages() {
+        this.state.messagesRef.push({ 
+            username: this.props.activeUser.displayName,
+            content: this.state.newMessage
+         });
+
+         this.setState({ newMessage: "" });
+    }
+
+    
+    handleChange(e) {
+        this.setState({ newMessage: e.target.value })
+    }
+
     render() {
         if (!this.props.room)
             return ("");
@@ -50,6 +64,8 @@ class MessageList extends Component {
                         })
                     }
                 </ul>
+                    <input type="text" placeholder='Write your message here..' value={ this.state.newMessage } onChange={ this.handleChange.bind(this) } />
+                    <button onClick={ this.newMessages }>Send</button>
             </div>
         );
   }
